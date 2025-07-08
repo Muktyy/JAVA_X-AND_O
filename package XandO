@@ -1,0 +1,121 @@
+import java.util.*;
+
+public class XandOConsoleGame {
+    static Scanner scanner = new Scanner(System.in);
+    static char[] board = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
+
+    static String playerOneName;
+    static String playerTwoName;
+    static int playerOneScore = 0;
+    static int playerTwoScore = 0;
+
+    public static void main(String[] args) {
+        welcome();
+        getPlayerNames();
+
+        boolean playAgain = true;
+        while (playAgain) {
+            Arrays.fill(board, ' ');
+            playGame();
+            System.out.println("Play again? (y/n): ");
+            String choice = scanner.nextLine();
+            playAgain = choice.equalsIgnoreCase("y");
+        }
+
+        System.out.println("\n🏁 Final Scores 🏁");
+        System.out.println(playerOneName + " (X): " + playerOneScore);
+        System.out.println(playerTwoName + " (O): " + playerTwoScore);
+        System.out.println("Thanks for playing!");
+    }
+
+    static void welcome() {
+        System.out.println("===================================");
+        System.out.println("🎮 Welcome to X and O Game (Tic Tac Toe) 🎮");
+        System.out.println("===================================\n");
+    }
+
+    static void getPlayerNames() {
+        System.out.print("Enter Player One Name (X): ");
+        playerOneName = scanner.nextLine();
+        System.out.print("Enter Player Two Name (O): ");
+        playerTwoName = scanner.nextLine();
+        System.out.println();
+    }
+
+    static void playGame() {
+        char currentPlayer = 'X';
+        int moves = 0;
+
+        while (true) {
+            displayBoard();
+            int move = getPlayerMove(currentPlayer);
+            board[move] = currentPlayer;
+            moves++;
+
+            if (checkWin(currentPlayer)) {
+                displayBoard();
+                String winner = (currentPlayer == 'X') ? playerOneName : playerTwoName;
+                System.out.println("🎉 " + winner + " (" + currentPlayer + ") wins! 🎉");
+                if (currentPlayer == 'X') playerOneScore++;
+                else playerTwoScore++;
+                break;
+            }
+
+            if (moves == 9) {
+                displayBoard();
+                System.out.println("🤝 It's a draw!");
+                break;
+            }
+
+            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+        }
+
+        System.out.println("\n🏆 Current Scores:");
+        System.out.println(playerOneName + " (X): " + playerOneScore);
+        System.out.println(playerTwoName + " (O): " + playerTwoScore);
+    }
+
+    static void displayBoard() {
+        System.out.println();
+        System.out.println(" " + board[0] + " | " + board[1] + " | " + board[2]);
+        System.out.println("---+---+---");
+        System.out.println(" " + board[3] + " | " + board[4] + " | " + board[5]);
+        System.out.println("---+---+---");
+        System.out.println(" " + board[6] + " | " + board[7] + " | " + board[8]);
+        System.out.println();
+    }
+
+    static int getPlayerMove(char player) {
+        int move;
+        String playerName = (player == 'X') ? playerOneName : playerTwoName;
+
+        while (true) {
+            System.out.print(playerName + " (" + player + "), enter your move (1-9): ");
+            try {
+                move = Integer.parseInt(scanner.nextLine()) - 1;
+                if (move >= 0 && move < 9 && board[move] == ' ') {
+                    return move;
+                } else {
+                    System.out.println("❌ Invalid move. Try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Please enter a valid number from 1 to 9.");
+            }
+        }
+    }
+
+    static boolean checkWin(char player) {
+        int[][] winCombos = {
+            {0, 1, 2}, {3, 4, 5}, {6, 7, 8},
+            {0, 3, 6}, {1, 4, 7}, {2, 5, 8},
+            {0, 4, 8}, {2, 4, 6}
+        };
+
+        for (int[] combo : winCombos) {
+            if (board[combo[0]] == player && board[combo[1]] == player && board[combo[2]] == player) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
